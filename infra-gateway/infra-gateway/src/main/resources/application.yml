@@ -1,0 +1,28 @@
+server:
+  port: 8080 # El puerto al que llamará tu React
+
+spring:
+  application:
+    name: infra-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5173" # TU PUERTO DE REACT
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: ms-auth
+          uri: lb://ms-auth  # Nombre del servicio en Eureka
+          predicates:
+            - Path=/auth/**
+        - id: ms-tienda
+          uri: lb://ms-tienda # Nombre del servicio en Eureka
+          predicates:
+            - Path=/api/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
