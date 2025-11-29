@@ -18,4 +18,8 @@ public class Producto {
     private String descripcion;
     
     private Boolean destacado;
+    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "categoria_id") // Columna de clave foránea
+    private Categoria categoria;
 }
