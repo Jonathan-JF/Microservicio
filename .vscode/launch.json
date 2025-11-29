@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MsTiendaApplication",
+            "request": "launch",
+            "mainClass": "com.ms_tienda.MsTiendaApplication",
+            "projectName": "ms-tienda"
+        },
+        {
+            "type": "java",
             "name": "MsAuthApplication",
             "request": "launch",
             "mainClass": "com.ms_auth.MsAuthApplication",
