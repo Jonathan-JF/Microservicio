@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "MsAuthApplication",
+            "request": "launch",
+            "mainClass": "com.ms_auth.MsAuthApplication",
+            "projectName": "ms-auth"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-InfraEurekaApplication<infra-eureka>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.infra_eureka.InfraEurekaApplication",
+            "projectName": "infra-eureka",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-InfraGatewayApplication<infra-gateway>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.infra_gateway.InfraGatewayApplication",
+            "projectName": "infra-gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

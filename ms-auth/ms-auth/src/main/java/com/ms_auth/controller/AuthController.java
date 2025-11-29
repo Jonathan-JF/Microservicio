@@ -6,48 +6,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth") // IMPORTANTE: Coincide con el Gateway
 public class AuthController {
 
-    private final UsuarioService usuarioService;
-
     @Autowired
-    public AuthController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
+    private UsuarioService usuarioService;
 
     // LOGIN
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> credenciales) {
-        String correo = credenciales.get("correo");
-        String pass = credenciales.get("password");
+    public ResponseEntity<?> login(@RequestBody Usuario loginRequest) {
+        Optional<Usuario> usuarioOpt = usuarioService.buscarPorEmail(loginRequest.getEmail());
 
-        // 1. Buscar usuario en BD
-        Usuario usuario = usuarioService.findByCorreo(correo);
-
-        // 2. Validar contraseña (usamos BCrypt en el servicio)
-        if (usuario != null && usuarioService.checkPassword(pass, usuario.getPassword())) {
-            // 3. Generar Token (Simplificado)
-            String token = "Bearer " + java.util.UUID.randomUUID().toString(); // TOKEN DE MENTIRA (TEMPORAL)
-
-            // 4. Devolver respuesta a React
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("token", token);
-            respuesta.put("usuario", usuario);
-            return ResponseEntity.ok(respuesta);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            // Validación simple de contraseña
+            if (usuario.getPassword().equals(loginRequest.getPassword())) {
+                
+                Map<String, Object> response = new HashMap<>();
+                response.put("ok", true);
+                response.put("usuario", usuario.getNombre());
+                response.put("role", usuario.getRol());
+                response.put("token", "token-simulado-12345");
+                
+                return ResponseEntity.ok(response);
+            }
         }
-
-        return ResponseEntity.status(401).body("Credenciales incorrectas");
+        return ResponseEntity.status(401).body(Map.of("ok", false, "mensaje", "Credenciales incorrectas"));
     }
 
     // REGISTRO
-    @PostMapping("/register")
-    public ResponseEntity<?> registrar(@RequestBody Usuario usuario) {
-        Usuario creado = usuarioService.register(usuario);
-        return ResponseEntity.ok(creado);
+    @PostMapping("/registro")
+    public ResponseEntity<?> registrar(@RequestBody Usuario nuevoUsuario) {
+        if (nuevoUsuario.getRol() == null) {
+            nuevoUsuario.setRol("CLIENTE");
+        }
+        Usuario guardado = usuarioService.guardarUsuario(nuevoUsuario);
+        return ResponseEntity.ok(guardado);
     }
 }
