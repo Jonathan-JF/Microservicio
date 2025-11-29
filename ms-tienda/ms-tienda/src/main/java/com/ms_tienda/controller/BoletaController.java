@@ -4,7 +4,6 @@ import com.ms_tienda.Repository.BoletaRepository;
 import com.ms_tienda.model.Boleta;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +22,11 @@ public class BoletaController {
     // Crear una nueva boleta (Compra)
     @Operation(
         summary = "Crea una nueva boleta (Compra)",
-        description = "Registra una nueva transacción de compra. Requiere autenticación de usuario (CLIENTE o ADMIN).",
-        security = @SecurityRequirement(name = "BearerAuth"), // Requiere autenticación
+        description = "Registra una nueva transacción de compra. Acceso público (Sin autenticación).", // Modificado
+        // Se elimina security = @SecurityRequirement(name = "BearerAuth")
         responses = {
             @ApiResponse(responseCode = "200", description = "Boleta creada exitosamente"),
-            @ApiResponse(responseCode = "401", description = "No autorizado / Token ausente o inválido")
+            @ApiResponse(responseCode = "400", description = "Solicitud inválida") // Se ajustan errores
         }
     )
     @PostMapping
@@ -42,11 +41,11 @@ public class BoletaController {
     // Ver historial de compras (Opcional pero recomendado para el Historial del Cliente)
     @Operation(
         summary = "Obtiene historial de compras por correo",
-        description = "Obtiene la lista de boletas asociadas a un correo de usuario específico. Requiere autenticación.",
-        security = @SecurityRequirement(name = "BearerAuth"), // Requiere autenticación
+        description = "Obtiene la lista de boletas asociadas a un correo de usuario específico. Acceso público (Sin autenticación).", // Modificado
+        // Se elimina security = @SecurityRequirement(name = "BearerAuth")
         responses = {
             @ApiResponse(responseCode = "200", description = "Historial de boletas obtenido exitosamente"),
-            @ApiResponse(responseCode = "401", description = "No autorizado / Token ausente o inválido")
+            @ApiResponse(responseCode = "404", description = "Usuario o boletas no encontrados") // Se ajustan errores
         }
     )
     @GetMapping("/usuario/{correo}")
