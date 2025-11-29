@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Servicio para la lógica de negocio de Productos.
- */
 @Service
 public class ProductoService {
 
@@ -28,5 +25,10 @@ public class ProductoService {
     // Método para crear o actualizar un producto
     public Producto save(Producto producto) {
         return productoRepository.save(producto);
+    }
+
+    // Nuevo método para eliminar un producto por ID (Necesario para el CRUD completo)
+    public void deleteById(Long id) {
+        productoRepository.deleteById(id);
     }
 }

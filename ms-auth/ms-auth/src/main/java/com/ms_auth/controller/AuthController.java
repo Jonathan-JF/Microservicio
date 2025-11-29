@@ -2,9 +2,14 @@ package com.ms_auth.controller;
 
 import com.ms_auth.model.Usuario;
 import com.ms_auth.service.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder; // Importar
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -13,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth") // IMPORTANTE: Coincide con el Gateway
+@Tag(name = "Autenticación", description = "Endpoints para Login y Registro de usuarios.")
 public class AuthController {
 
     @Autowired
@@ -22,6 +28,24 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     // LOGIN
+    @Operation(
+        summary = "Inicia sesión de usuario",
+        description = "Verifica credenciales y retorna un token JWT simulado y datos de usuario.",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Inicio de sesión exitoso",
+                content = @Content(mediaType = "application/json",
+                    schema = @Schema(example = "{\"ok\": true, \"id\": \"1\", \"fullName\": \"Admin Tienda\", \"role\": \"ADMIN\", \"token\": \"Bearer admin@tienda.cl_JWT_TOKEN_12345_ADMIN\"}"))
+            ),
+            @ApiResponse(
+                responseCode = "401",
+                description = "Credenciales incorrectas",
+                content = @Content(mediaType = "application/json",
+                    schema = @Schema(example = "{\"ok\": false, \"mensaje\": \"Correo o contraseña incorrectos\"}"))
+            )
+        }
+    )
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario loginRequest) {
         Optional<Usuario> usuarioOpt = usuarioService.buscarPorEmail(loginRequest.getEmail());
@@ -50,6 +74,24 @@ public class AuthController {
     }
 
     // REGISTRO
+    @Operation(
+        summary = "Registra un nuevo usuario",
+        description = "Crea un nuevo usuario con rol por defecto 'CLIENTE' y encripta la contraseña.",
+        responses = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Registro exitoso",
+                content = @Content(mediaType = "application/json",
+                    schema = @Schema(example = "{\"ok\": true, \"id\": 3, \"mensaje\": \"Registro exitoso\"}"))
+            ),
+            @ApiResponse(
+                responseCode = "409",
+                description = "Conflicto: Correo ya registrado",
+                content = @Content(mediaType = "application/json",
+                    schema = @Schema(example = "{\"ok\": false, \"mensaje\": \"El correo ya está registrado\"}"))
+            )
+        }
+    )
     @PostMapping("/registro")
     public ResponseEntity<?> registrar(@RequestBody Usuario nuevoUsuario) {
         // Verificar si el usuario ya existe
