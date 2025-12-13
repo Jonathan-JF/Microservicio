@@ -1,5 +1,6 @@
-package com.ms_tienda.Config;
+package com.ms_tienda.config.deprecated;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,7 +9,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+@ConditionalOnClass(name = "org.springframework.security.config.annotation.web.builders.HttpSecurity")
+public class SecurityConfigOld {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -16,7 +18,6 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> {})
             .authorizeHttpRequests(auth -> auth
-                // Permitimos explicitamente Swagger y endpoints de api-docs
                 .requestMatchers(
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
@@ -27,10 +28,11 @@ public class SecurityConfig {
                     "/swagger-ui/swagger-initializer.js",
                     "/swagger-ui/swagger-ui.css"
                 ).permitAll()
-                // Permitimos todo el resto (modo examen/simplificado)
                 .anyRequest().permitAll()
             );
 
         return http.build();
     }
 }
+ 
+ 
