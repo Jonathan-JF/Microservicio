@@ -1,6 +1,7 @@
 package com.ms_tienda.controller;
 
 import com.ms_tienda.model.Producto;
+import com.ms_tienda.dto.ProductoRequest;
 import com.ms_tienda.service.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -8,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import com.ms_tienda.Repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +24,11 @@ import java.util.Optional;
 @Tag(name = "Productos", description = "Gestión del catálogo de productos.")
 public class ProductoController {
 
-    @Autowired
-    private ProductoService productoService;
+        @Autowired
+        private ProductoService productoService;
+
+        @Autowired
+        private CategoriaRepository categoriaRepository;
 
     // --- READ ALL ---
     @Operation(
@@ -62,6 +68,16 @@ public class ProductoController {
     @Operation(
             summary = "Crear un nuevo producto",
             description = "Agrega un nuevo producto.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Producto a crear",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = ProductoRequest.class),
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = "{\"nombre\":\"Camiseta deportiva\",\"precio\":19.99,\"imagen\":\"https://example.com/imagen.jpg\",\"descripcion\":\"Camiseta de algodón\",\"destacado\":false,\"categoriaId\":1}"
+                            )
+                    )
+            ),
             responses = {
                     @ApiResponse(responseCode = "201", description = "Producto creado",
                             content = @Content(schema = @Schema(implementation = Producto.class))),
@@ -69,8 +85,24 @@ public class ProductoController {
             }
     )
     @PostMapping
-    public ResponseEntity<Producto> crearProducto(@RequestBody Producto nuevoProducto) {
-        Producto guardado = productoService.save(nuevoProducto);
+    public ResponseEntity<Producto> crearProducto(@Valid @RequestBody ProductoRequest nuevoProducto) {
+        Producto p = new Producto();
+        p.setNombre(nuevoProducto.getNombre());
+        p.setPrecio(nuevoProducto.getPrecio());
+        p.setImagen(nuevoProducto.getImagen());
+        p.setDescripcion(nuevoProducto.getDescripcion());
+        p.setDestacado(nuevoProducto.getDestacado());
+
+                // Buscar la categoria por id y asignarla; si no existe, devolver 400
+                if (nuevoProducto.getCategoriaId() != null) {
+                        var categoriaOpt = categoriaRepository.findById(nuevoProducto.getCategoriaId());
+                        if (categoriaOpt.isEmpty()) {
+                                return ResponseEntity.badRequest().build();
+                        }
+                        p.setCategoria(categoriaOpt.get());
+                }
+
+        Producto guardado = productoService.save(p);
         return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
     }
 

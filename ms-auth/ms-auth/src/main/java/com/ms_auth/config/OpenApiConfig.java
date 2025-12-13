@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
 
 @Configuration
 @OpenAPIDefinition(
@@ -29,5 +30,7 @@ import org.springframework.context.annotation.Configuration;
     description = "Token JWT (simulado) para acceder a recursos protegidos."
 )
 public class OpenApiConfig {
+
+    // Not registering a GroupedOpenApi bean to avoid runtime dependency issues.
 
 }
