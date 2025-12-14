@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
         title = "MS-TIENDA API",
         version = "1.0",
         description = "Documentación del catálogo de productos.",
-        contact = @Contact(name = "Soporte", email = "soporte@tienda.cl")
+        contact = @Contact(name = "Soporte", email = "soporte@tienda.cl",url = "http://localhost:5173")
     ),
     // IMPORTANTE: Esto le dice a Swagger que las peticiones se hagan al Gateway (8080)
     servers = {
