@@ -27,7 +27,7 @@ public class ProductoService {
         return productoRepository.save(producto);
     }
 
-    // Nuevo método para eliminar un producto por ID (Necesario para el CRUD completo)
+    // Nuevo método para eliminar un producto por ID
     public void deleteById(Long id) {
         productoRepository.deleteById(id);
     }

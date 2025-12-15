@@ -21,11 +21,13 @@ public class SecurityConfig {
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
-            // 1. DESHABILITAR BASIC AUTH explícitamente para evitar el popup del navegador
             .httpBasic(basic -> basic.disable()) 
             .formLogin(form -> form.disable()) 
             .authorizeHttpRequests(auth -> auth
-            .anyRequest().permitAll());
+                // Permitir Swagger aquí también
+                .requestMatchers("/doc/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .anyRequest().permitAll()
+            );
 
         return http.build();
     }
@@ -33,8 +35,7 @@ public class SecurityConfig {
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Ajusta esto a tu puerto de frontend real
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","http://localhost:8080"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:8080"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
